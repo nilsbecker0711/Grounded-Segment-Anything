@@ -8,11 +8,11 @@ import torch
 from PIL import Image
 from torchvision.ops import box_convert
 
-import groundingdino.datasets.transforms as T
-from groundingdino.models import build_model
-from groundingdino.util.misc import clean_state_dict
-from groundingdino.util.slconfig import SLConfig
-from groundingdino.util.utils import get_phrases_from_posmap
+import GroundingDINO.groundingdino.datasets.transforms as T
+from GroundingDINO.groundingdino.models import build_model
+from GroundingDINO.groundingdino.util.misc import clean_state_dict
+from GroundingDINO.groundingdino.util.slconfig import SLConfig
+from GroundingDINO.groundingdino.util.utils import get_phrases_from_posmap
 
 # ----------------------------------------------------------------------------------------------------------------------
 # OLD API
@@ -30,7 +30,7 @@ def load_model(model_config_path: str, model_checkpoint_path: str, device: str =
     args = SLConfig.fromfile(model_config_path)
     args.device = device
     model = build_model(args)
-    checkpoint = torch.load(model_checkpoint_path, map_location="cpu")
+    checkpoint = torch.load(model_checkpoint_path, map_location="cpu", weights_only=False)
     model.load_state_dict(clean_state_dict(checkpoint["model"]), strict=False)
     model.eval()
     return model
@@ -114,7 +114,7 @@ class Model:
         self,
         model_config_path: str,
         model_checkpoint_path: str,
-        device: str = "cuda"
+        device: str = "cpu"
     ):
         self.model = load_model(
             model_config_path=model_config_path,

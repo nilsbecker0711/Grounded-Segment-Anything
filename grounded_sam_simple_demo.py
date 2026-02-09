@@ -5,18 +5,20 @@ import supervision as sv
 import torch
 import torchvision
 
-from groundingdino.util.inference import Model
-from segment_anything import sam_model_registry, SamPredictor
+from GroundingDINO.groundingdino.util.inference import Model
+from segment_anything.segment_anything.build_sam import sam_model_registry 
+from segment_anything.segment_anything.predictor import SamPredictor
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Device: {torch.device}")
 
 # GroundingDINO config and checkpoint
 GROUNDING_DINO_CONFIG_PATH = "GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
-GROUNDING_DINO_CHECKPOINT_PATH = "./groundingdino_swint_ogc.pth"
+GROUNDING_DINO_CHECKPOINT_PATH = "Weights/groundingdino_swint_ogc.pth"
 
 # Segment-Anything checkpoint
 SAM_ENCODER_VERSION = "vit_h"
-SAM_CHECKPOINT_PATH = "./sam_vit_h_4b8939.pth"
+SAM_CHECKPOINT_PATH = "Weights/sam_vit_h_4b8939.pth"
 
 # Building GroundingDINO inference model
 grounding_dino_model = Model(model_config_path=GROUNDING_DINO_CONFIG_PATH, model_checkpoint_path=GROUNDING_DINO_CHECKPOINT_PATH)
@@ -52,7 +54,8 @@ labels = [
     f"{CLASSES[class_id]} {confidence:0.2f}" 
     for _, _, confidence, class_id, _, _ 
     in detections]
-annotated_frame = box_annotator.annotate(scene=image.copy(), detections=detections, labels=labels)
+#annotated_frame = box_annotator.annotate(scene=image.copy(), detections=detections, labels=labels)
+annotated_frame = box_annotator.annotate(scene=image.copy(), detections=detections)
 
 # save the annotated grounding dino image
 cv2.imwrite("groundingdino_annotated_image.jpg", annotated_frame)
@@ -101,7 +104,8 @@ labels = [
     for _, _, confidence, class_id, _, _ 
     in detections]
 annotated_image = mask_annotator.annotate(scene=image.copy(), detections=detections)
-annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
+#annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
+annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections)
 
 # save the annotated grounded-sam image
 cv2.imwrite("grounded_sam_annotated_image.jpg", annotated_image)
